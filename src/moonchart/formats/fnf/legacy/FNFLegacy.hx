@@ -358,7 +358,7 @@ class FNFLegacyBasic<T:FNFLegacyFormat> extends BasicJsonFormat<{song:T}, Dynami
 				});
 		});
 
-		return {
+		final m:BasicMetaData = {
 			title: data.song.song,
 			bpmChanges: bpmChanges,
 			offset: 0.0,
@@ -369,7 +369,14 @@ class FNFLegacyBasic<T:FNFLegacyFormat> extends BasicJsonFormat<{song:T}, Dynami
 				NEEDS_VOICES => data.song.needsVoices,
 				LANES_LENGTH => 8
 			]
+		};
+		if(data.song.extra != null) {
+		    for(f in Reflect.fields(data.song.extra)) {
+				if(!m.extraData.exists(f))
+					m.extraData.set(f, Reflect.field(data.song.extra, f));
+			}
 		}
+		return m;
 	}
 
 	public override function fromFile(path:String, ?meta:StringInput, ?diff:FormatDifficulty):FNFLegacyBasic<T>
@@ -414,7 +421,8 @@ typedef FNFLegacyFormat =
 	validScore:Bool,
 	player1:String,
 	player2:String,
-	notes:Array<FNFLegacySection>
+	notes:Array<FNFLegacySection>,
+	?extra:Dynamic
 }
 
 typedef FNFLegacySection =

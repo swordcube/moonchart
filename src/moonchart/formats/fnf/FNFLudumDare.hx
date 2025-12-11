@@ -14,7 +14,8 @@ typedef FNFLudumDareMeta =
 {
 	song:String,
 	bpm:Int,
-	sections:Int
+	sections:Int,
+	?extra:Dynamic
 }
 
 typedef FNFLudumDareFormat =
@@ -245,7 +246,7 @@ class FNFLudumDare extends BasicFormat<FNFLudumDareFormat, FNFLudumDareMeta>
 
 	override function getChartMeta():BasicMetaData
 	{
-		return {
+		final m:BasicMetaData = {
 			title: meta.song,
 			offset: 0.0,
 			scrollSpeeds: Util.fillMap(diffs, 1.0),
@@ -258,7 +259,14 @@ class FNFLudumDare extends BasicFormat<FNFLudumDareFormat, FNFLudumDareMeta>
 				}
 			],
 			extraData: [LANES_LENGTH => 8]
+		};
+		if(meta.extra != null) {
+		    for(f in Reflect.fields(meta.extra)) {
+				if(!m.extraData.exists(f))
+					m.extraData.set(f, Reflect.field(meta.extra, f));
+			}
 		}
+		return m;
 	}
 
 	inline function formatSection(song:String, index:Int):String

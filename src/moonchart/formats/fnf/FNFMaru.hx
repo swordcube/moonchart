@@ -196,7 +196,7 @@ class FNFMaru extends BasicJsonFormat<{song:FNFMaruJsonFormat}, FNFMaruMetaForma
 		var song = data.song;
 		legacy.data = cast this.data;
 
-		return {
+		final m:BasicMetaData = {
 			title: song.song,
 			bpmChanges: legacy.getChartMeta().bpmChanges,
 			offset: song.offsets[0],
@@ -210,6 +210,13 @@ class FNFMaru extends BasicJsonFormat<{song:FNFMaruJsonFormat}, FNFMaruMetaForma
 				LANES_LENGTH => 8
 			]
 		}
+		if(song.extra != null) {
+		    for(f in Reflect.fields(song.extra)) {
+				if(!m.extraData.exists(f))
+					m.extraData.set(f, Reflect.field(song.extra, f));
+			}
+		}
+		return m;
 	}
 
 	public var optimizedOutput:Bool = true;
@@ -282,7 +289,9 @@ typedef FNFMaruJsonFormat =
 	// Backwards compat
 	?player1:String,
 	?player2:String,
-	?player3:String
+	?player3:String,
+
+	?extra:Dynamic
 }
 
 typedef FNFMaruSection =

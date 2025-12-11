@@ -343,7 +343,7 @@ class FNFVSlice extends BasicJsonFormat<FNFVSliceFormat, FNFVSliceMeta>
 		var songRatings:Map<String, Int> = (meta.playData?.ratings != null) ? meta.playData.ratings.resolve() : [];
 		var scrollSpeeds:Map<String, Float> = data.scrollSpeed.resolve();
 
-		return {
+		final m:BasicMetaData = {
 			title: meta.songName,
 			bpmChanges: bpmChanges,
 			scrollSpeeds: scrollSpeeds,
@@ -365,7 +365,14 @@ class FNFVSlice extends BasicJsonFormat<FNFVSliceFormat, FNFVSliceMeta>
 				SONG_NOTE_SKIN => meta.playData.noteStyle ?? VSLICE_DEFAULT_NOTE_SKIN,
 				LANES_LENGTH => 8
 			]
+		};
+		if(meta.extra != null) {
+		    for(f in Reflect.fields(meta.extra)) {
+				if(!m.extraData.exists(f))
+					m.extraData.set(f, Reflect.field(meta.extra, f));
+			}
 		}
+		return m;
 	}
 
 	public override function fromFile(path:String, ?meta:String, ?diff:FormatDifficulty):FNFVSlice
@@ -418,7 +425,9 @@ typedef FNFVSliceMeta =
 	playData:FNFVSlicePlayData,
 	songName:String,
 	offsets:FNFVSliceOffsets,
-	timeChanges:Array<FNFVSliceTimeChange>
+	timeChanges:Array<FNFVSliceTimeChange>,
+
+	?extra:Dynamic
 }
 
 typedef FNFVSliceTimeChange =

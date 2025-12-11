@@ -305,7 +305,7 @@ class FNFCodename extends BasicJsonFormat<FNFCodenameFormat, FNFCodenameMeta>
 
 		Timing.sortBPMChanges(bpmChanges);
 
-		return {
+		final m:BasicMetaData = {
 			title: meta.displayName,
 			bpmChanges: bpmChanges,
 			offset: 0.0,
@@ -318,7 +318,14 @@ class FNFCodename extends BasicJsonFormat<FNFCodenameFormat, FNFCodenameMeta>
 				SONG_CHARTER => meta?.customValues?.charters ?? Moonchart.DEFAULT_CHARTER,
 				STAGE => data.stage
 			]
+		};
+		if(meta?.customValues != null) {
+		    for(f in Reflect.fields(meta.customValues)) {
+				if(!m.extraData.exists(f))
+				    m.extraData.set(f, Reflect.field(meta.customValues, f));
+			}
 		}
+		return m;
 	}
 
 	public override function fromFile(path:String, ?meta:String, ?diff:FormatDifficulty):FNFCodename

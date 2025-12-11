@@ -230,7 +230,7 @@ class FNFKade extends BasicJsonFormat<{song:FNFKadeFormat}, FNFKadeMeta>
 			curBPM =  event.value;
 		}
 
-		return {
+		final m:BasicMetaData = {
 			title: data.song.songName,
 			bpmChanges: bpmChanges,
 			offset: data.song.offset,
@@ -243,7 +243,14 @@ class FNFKade extends BasicJsonFormat<{song:FNFKadeFormat}, FNFKadeMeta>
 				NEEDS_VOICES => data.song.needsVoices,
 				LANES_LENGTH => 8
 			]
+		};
+		if(data.song.extra != null) {
+		    for(f in Reflect.fields(data.song.extra)) {
+				if(!m.extraData.exists(f))
+					m.extraData.set(f, Reflect.field(data.song.extra, f));
+			}
 		}
+		return m;
 	}
 
 	public override function fromFile(path:String, ?meta:String, ?diff:FormatDifficulty):FNFKade
@@ -300,6 +307,8 @@ typedef FNFKadeFormat =
 	needsVoices:Bool,
 	validScore:Bool,
 	noteStyle:String,
+	
+	?extra:Dynamic,
 }
 
 typedef FNFKadeSection =
