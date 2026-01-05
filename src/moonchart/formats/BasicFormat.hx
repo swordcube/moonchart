@@ -142,12 +142,12 @@ abstract class BasicFormat<D, M>
 	/**
 	 * Format instance data.
 	 */
-	public var data:D;
+	public var data(default, set):D;
 
 	/**
 	 * Format instance metadata.
 	 */
-	public var meta:M;
+	public var meta(default, set):M;
 
 	/**
 	 * Format instance difficulties.
@@ -522,6 +522,18 @@ abstract class BasicFormat<D, M>
 			diffs: pushedDiffs,
 			notes: chartNotes
 		}
+	}
+
+	// Adding these for customization sake
+
+	function set_data(v):D
+	{
+		return data = v;
+	}
+
+	function set_meta(v):M
+	{
+		return meta = v;
 	}
 }
 
