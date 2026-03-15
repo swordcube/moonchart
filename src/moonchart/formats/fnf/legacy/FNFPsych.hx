@@ -47,6 +47,13 @@ class FNFPsych extends FNFPsychBasic<PsychJsonFormat>
 @:noCompletion
 class FNFPsychBasic<T:PsychJsonFormat> extends FNFLegacyMetaBasic<T, {song:T}>
 {
+    /**
+	 * If set to `true`, gf section events will always
+	 * be made for every section, regardless of if the section before it
+	 * was already a gf section.
+	 */
+    public var alwaysMakeGfSectionEvents:Bool = false;
+
 	public function new(?data:T)
 	{
 		super(data);
@@ -96,13 +103,13 @@ class FNFPsychBasic<T:PsychJsonFormat> extends FNFLegacyMetaBasic<T, {song:T}>
 		var events = super.getEvents();
 
 		// Push GF section events
-		var lastGfSection:Bool = false;
+		var lastGfSection:Null<Bool> = null;
 		forEachSection(data.song.notes, (section, startTime, endTime) ->
 		{
 			var psychSection:PsychSection = cast section;
 
 			var gfSection:Bool = (psychSection.gfSection ?? false);
-			if (gfSection != lastGfSection)
+			if (alwaysMakeGfSectionEvents || gfSection != lastGfSection)
 			{
 				events.push(makeGfSectionEvent(startTime, gfSection));
 				lastGfSection = gfSection;

@@ -99,6 +99,13 @@ class FNFLegacyMetaBasic<T:FNFLegacyFormat, M> extends BasicJsonFormat<{song:T},
 	 */
 	public var noteTypeResolver(default, null):FNFNoteTypeResolver;
 
+	/**
+	 * If set to `true`, camera movement events will always
+	 * be made for every section, regardless of if the section before it
+	 * was already a must hit section.
+	 */
+	public var alwaysMakeCameraEvents:Bool = false;
+
 	public function new(?data:T)
 	{
 		super({timeFormat: MILLISECONDS, supportsDiffs: false, supportsEvents: false});
@@ -291,7 +298,7 @@ class FNFLegacyMetaBasic<T:FNFLegacyFormat, M> extends BasicJsonFormat<{song:T},
 		// Push musthit events
 		forEachSection(data.song.notes, (section, startTime, endTime) ->
 		{
-			if (section.mustHitSection != lastMustHit)
+			if (alwaysMakeCameraEvents || section.mustHitSection != lastMustHit)
 			{
 				events.push(FNFLegacy.makeMustHitSectionEvent(startTime, section.mustHitSection));
 				lastMustHit = section.mustHitSection;
